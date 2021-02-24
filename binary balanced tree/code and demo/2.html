@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>"二叉平衡树的改进"</title>
+</head>
+<body>
+    <div>
+        <ul>
+            <li>增加节点</li>
+            <li>方式一：<input type="button" value="请随机增加一个节点" title="请随机增加一个节点" onclick="AddRandom()" /></li>
+            <li>方式二：<input id="numbertext" title="" placeholder="请用,(单字节)分割数字,0-999之间的数字" value="" /><input type="button" value="一个一个节点增加" title="增加一个节点" onclick="AddOneNumber()" /></li>
+            <li></li>
+            <li>删除节点</li>
+            <li><input id="deleteNumberText" type="text" placeholder="请输入需要删除的节点" /><input type="button" value="删除" onclick="DeleteNumber()" /> </li>
+            <li></li>
+        </ul>
+    </div>
+    <form>
+        <fieldset>
+            <legend>二叉平衡树</legend>
+            <div id="currentView"></div>
+        </fieldset>
+    </form>
+    <form id="stepView"></form>
+    
+    <script>
+        var RBNode = function (_date, _paret) {
+            this.Data = _date;
+            this.Parent = _paret;
+            this.LeftNode = null;
+            this.RightNode = null;
+        }
+
+        var RedBlackBinaryTree = function () {
+            this.RootNode = null;//根节点
+            this.Insert = function (insertValue) {
+                if (this.RootNode == null) {
+                    this.RootNode = new RBNode(insertValue, null);
+                } else {
+                    var newNode = insert.call(this, insertValue);
+                    insertFixUp.call(this, this.RootNode, insertValue);
+                   // CreateStepView(this.RootNode, "insertSolution3", insertValue);//记录分解步骤
+                   
+                }
+            }
+            this.Remove = function (key) {
+                var node = search.call(this, this.RootNode, key);
+                if (node == null) {
+                    return;
+                } else {
+                    remove.call(this, this.RootNode,key);
+                }
+            }
+            function insert(key) {
+                ClearStepView();//清空分解步骤
+                var node = this.RootNode;
+
+                var newNode = new RBNode(key, null);
+                while (true) {
+                    if (key > node.Data) {
+                        if (node.RightNode == null) {
+                            newNode.Parent = node;
+                            node.RightNode = newNode;
+                            break;
+                        }
+                        node = node.RightNode;
+                    } else if (key < node.Data) {
+                        if (node.LeftNode == null) {
+                            newNode.Parent = node;
+                            node.LeftNode = newNode;
+                            break;
+                        }
+                        node = node.LeftNode;
+                    } else {
+                        break;
+                    }
+                }
+                return newNode;
+            }
+            function insertFixUp(node, key)
+            {
+                if (node != null)
+                {
+                    if (key < node.Data)
+                    {
+                        insertFixUp.call(this,node.LeftNode, key);
+                        if (height.call(this,node.LeftNode) - height.call(this,node.RightNode) > 1)
+                        {
+                            if (height.call(this,node.LeftNode.LeftNode) - height.call(this,node.LeftNode.RightNode) > 0)
+                            {
+                                CreateStepView(this.RootNode, "insertCaseA1", key);//记录分解步
+                                rightRotation.call(this, node);
+ 
+                               CreateStepView(this.RootNode, "insertSolutionA1");//记录分解
+                            }
+                            else
+                            {
+                               CreateStepView(this.RootNode, "insertCaseB1", key);//记录分解步骤
+                                leftRightRotation.call(this, node);
+                               
+                                CreateStepView(this.RootNode, "insertSolutionB1");//记录分解步骤
+                            }
+                        }
+                    }
+                    else if (key > node.Data)
+                    {
+                        insertFixUp.call(this,node.RightNode, key);
+                        if (height.call(this, node.LeftNode) - height.call(this, node.RightNode) < -1)
+                        {
+                            if (height.call(this, node.RightNode.LeftNode) - height.call(this, node.RightNode.RightNode) > 0)
+                            {
+
+
+                               CreateStepView(this.RootNode, "insertCase4", key);//记录分解步骤
+                                RightleftRotation.call(this, node);
+                               
+                                CreateStepView(this.RootNode, "insertSolution4");//记录分解步骤
+                            }
+                            else
+                            {
+
+                              CreateStepView(this.RootNode, "insertCase3", key);//记录分解步骤
+                                leftRotation.call(this, node);
+                              CreateStepView(this.RootNode, "insertSolution3");//记录分解步骤
+
+                            }
+                        }
+                    }
+                    else
+                    {
+                    }
+                }
+             
+            }
+            function leftRotation(node)
+            {
+                
+                var temp;
+                if (node.Parent != null)
+                {
+                    if (node == node.Parent.LeftNode)
+                    {
+                        temp = node.RightNode.LeftNode;
+                        node.Parent.LeftNode = node.RightNode;
+                        node.RightNode.Parent = node.Parent;
+                        node.RightNode.LeftNode =node;
+                        node.Parent = node.RightNode;
+                        if (temp == null)
+                        {
+                            node.RightNode = null;
+                        }
+                        else
+                        {
+                            node.RightNode = temp;
+                            temp.Parent = node;
+                        }
+                    }
+                    else
+                    {
+                        temp = node.RightNode.LeftNode;
+                        node.Parent.RightNode = node.RightNode;
+                        node.RightNode.Parent =node.Parent ;
+                        node.RightNode.LeftNode = node;
+                        node.Parent = node.RightNode;
+                        if (temp == null)
+                        {
+                            node.RightNode = null;
+                        }
+                        else
+                        {
+                            node.RightNode = temp;
+                            temp.Parent = node;
+                        }
+                    }
+                }
+                else
+                {
+                    this.RootNode = node.RightNode;
+                    temp = node.RightNode.LeftNode;
+                    node.RightNode.LeftNode= node;
+                    node.Parent = node.RightNode;
+                    node.RightNode.Parent=null;
+                    if (temp == null)
+                    {
+                        node.RightNode= null;
+                    }
+                    else
+                    {
+                        node.RightNode = temp;
+                        temp.Parent = node;
+                    }
+                }
+               
+            }
+
+            function rightRotation(node)
+            {
+            
+                if (node.Parent != null)
+                {
+                    if (node == node.Parent.LeftNode)
+                    {
+                        var temp = node.LeftNode.RightNode;
+                        node.Parent.LeftNode = node.LeftNode;
+                        node.LeftNode.Parent = node.Parent;
+                        node.LeftNode.RightNode = node;
+                        node.Parent = node.LeftNode;
+                        if (temp == null)
+                            node.LeftNode = null;
+                        else
+                        {
+                            node.LeftNode = temp;
+                            temp.Parent = node;
+                        }
+                    }
+                    else
+                    {
+                        temp = node.LeftNode.RightNode;
+                        node.Parent.RightNode = node.LeftNode;
+                        node.LeftNode.Parent = node.Parent;
+                        node.LeftNode.RightNode = node;
+                        node.Parent = node.LeftNode;
+                        if (temp == null)
+                            node.LeftNode = null;
+                        else
+                        {
+                            node.LeftNode = temp;
+                            temp.Parent = node;
+                        }
+                    }
+                }
+                else
+                {
+                    this.RootNode = node.LeftNode;
+                    temp = node.LeftNode.RightNode;
+                    node.LeftNode.RightNode = node;
+                    node.Parent = node.LeftNode;
+                    node.LeftNode.Parent = null;
+                    if (temp == null)
+                        node.LeftNode = null;
+                    else
+                    {
+                        node.LeftNode = temp;
+                        temp.Parent = node;
+                    }
+                }
+            }
+            function leftRightRotation(node) {
+               
+                leftRotation.call(this, node.LeftNode);
+                rightRotation.call(this, node);
+               
+            }
+            function RightleftRotation(node) {
+                
+                rightRotation.call(this, node.RightNode);
+                leftRotation.call(this, node);
+             
+            }
+
+            function remove(node, key)
+            {
+                ClearStepView();//清空分解步骤
+                if (node != null)
+                {
+                    if (node.Data == key)
+                    {
+                        if (node.LeftNode != null && node.RightNode != null)
+                        {
+                            if (height.call(this,node.LeftNode) - height.call(this,node.RightNode) >= 0)
+                            {
+                                node.Data = findMax.call(this, node.LeftNode).Data;
+                                remove.call(this, node.LeftNode, node.Data);
+                            }
+                            else
+                            {
+                                node.Data = findMin.call(this, node.RightNode).Data;
+                                remove.call(this, node.RightNode, node.Data);
+                            }
+                        }
+                        else
+                        {//左右子树有一个不为空，直接用需要删除的结点的子结点替换即可
+                            var temp = node;
+                            var p = node.LeftNode ? node.LeftNode : node.RightNode;//t赋值为不空的子结点
+                            if (node.Parent != null) {
+                                if (node.LeftNode == null && node.RightNode == null) {
+                                    if (node.Parent.LeftNode == node)
+                                        node.Parent.LeftNode = null;
+                                    else
+                                        node.Parent.RightNode = null;
+                                }
+                                else {
+                                    if (node.Parent.LeftNode == node)
+                                        node.Parent.LeftNode = p;
+                                    else
+                                        node.Parent.RightNode = p;
+                                    p.Parent = node.Parent;
+                                }
+                            }
+                            else
+                                this.RootNode = p;
+                            delete temp;
+                        }
+                    }
+                    else if (key < node.Data)//要删除的结点在左子树上
+                    {
+                        //递归删除左子树上的结点
+                        remove.call(this, node.LeftNode, key);
+                        //判断是否仍然满足平衡条件
+                        if (height.call(this, node.LeftNode) - height.call(this,node.RightNode) < -1)
+                        {
+                            if (height.call(this, node.RightNode.LeftNode) - height.call(this, node.RightNode.RightNode) > 0)
+                            {
+                                //RL双旋转
+                                CreateStepView(this.RootNode, "deleteCase3", key);//记录分解步骤
+                                RightleftRotation.call(this, node);
+                                CreateStepView(this.RootNode, "deleteSolution3");//记录分解步骤
+                            }
+                            else
+                            {//RR单旋转
+                                CreateStepView(this.RootNode, "deleteCase1", key);//记录分解步骤
+                                leftRotation.call(this, node);
+                                CreateStepView(this.RootNode, "deleteSolution1");//记录分解步骤
+                            }
+                        }
+                    }
+                    else//要删除的结点在右子树上
+                    {
+                        //递归删除右子树结点
+                        remove.call(this,node.RightNode, key);
+                        //判断平衡情况
+                        if (height.call(this, node.LeftNode) - height.call(this, node.RightNode) > 1)
+                        {
+                            if (height.call(this, node.LeftNode.RightNode) > height.call(this, node.LeftNode.LeftNode))
+                            {
+                                //LR双旋转
+                                CreateStepView(this.RootNode, "deleteCase4",key);//记录分解步骤
+                                leftRightRotation.call(this,node);
+                                CreateStepView(this.RootNode, "deleteSolution4");//记录分解步骤
+                            }
+                            else
+                            {
+                                //LL单旋转
+                                CreateStepView(this.RootNode, "deleteCase2",key);//记录分解步骤
+                                rightRotation.call(this,node);
+                                CreateStepView(this.RootNode, "deleteSolution2");//记录分解步骤
+                            }
+
+                        }
+                    }
+                }
+            }
+            this.Search = function (key) {
+                return search.call(this, this.RootNode, key);
+            }
+
+            function search(node, key) {
+                if (node == null) {
+                    return null;
+                }
+
+                if (node.Data > key) {
+                    return search(node.LeftNode, key);
+                } else if (node.Data < key) {
+                    return search(node.RightNode, key);
+                } else {
+                    return node;
+                }
+            }
+
+            this.FindMin = function () {
+                return findMin(this.RootNode);
+            }
+
+            function findMin(node) {
+                if (node.LeftNode == null) {
+                    return node;
+                }
+                return findMin(node.LeftNode);
+            }
+
+            this.FindMax = function () {
+                return findMax(this.RootNode)
+            }
+
+            function findMax(node) {
+                if (node.RightNode == null) {
+                    return node;
+                }
+                return findMax(node.RightNode);
+            }
+
+
+            this.SearchRange = function (minKey, maxKey) {
+                return searchRange(minKey, maxKey, this.RootNode, []);
+            }
+
+            function searchRange(minKey, maxKey, node, nodeList) {
+                if (node == null) {
+                    return nodeList;
+                }
+
+                if (node.Data > minKey) {
+                    searchRange(minKey, maxKey, node.LeftNode, nodeList);
+                }
+
+                if (node.Data >= minKey && node.Data < maxKey) {
+                    nodeList.push(node.Data);
+                }
+
+                if (node.Data < maxKey) {
+                    searchRange(minKey, maxKey, node.RightNode, nodeList);
+                }
+
+                return nodeList;
+            }
+
+            this.LevelOrder = function (action) {
+                levelOrder(this.RootNode, action);
+            }
+
+            function levelOrder(node, action) {
+                var stack = [];
+                stack.push(node);
+
+                while (stack.length > 0) {
+                    var temp = stack.pop();
+
+                    action(temp);
+
+                    if (temp.LeftNode != null) {
+                        stack.push(temp.LeftNode);
+                    }
+
+                    if (temp.RightNode != null) {
+                        stack.push(temp.RightNode);
+                    }
+                }
+            }
+            
+
+            this.PreOrder = function (action) {
+                treeOrder(this.RootNode, action, null, null);
+            }
+
+            this.InOrder = function (action) {
+                treeOrder(this.RootNode, null, action, null);
+            }
+
+            this.PostOrder = function (action) {
+                treeOrder(this.RootNode, null, null, action);
+            }
+
+            function treeOrder(node, preOrderAction, inOrderAction, postOrderAction) {
+                if (preOrderAction) {
+                    preOrderAction(node);
+                }
+
+                if (node.LeftNode != null) {
+                    treeOrder(node.LeftNode, preOrderAction, inOrderAction, postOrderAction);
+                }
+
+                if (inOrderAction) {
+                    inOrderAction(node);
+                }
+
+                if (node.RightNode != null) {
+                    treeOrder(node.RightNode, preOrderAction, inOrderAction, postOrderAction);
+                }
+
+                if (postOrderAction) {
+                    postOrderAction(node);
+                }
+            }
+
+            function height(node) {
+
+                var h1 = 0, h2 = 0;
+                if (node != null) {
+                    h1 = height(node.LeftNode);
+                    h2 = height(node.RightNode);
+                }
+                else {
+                    return 0;
+                }
+                return (h1 + 1) >( h2 + 1 )? (h1 + 1) : (h2 + 1);
+            }
+        }
+        </script>
+
+    <script>
+        var height = 50;//节点之间的高
+        var width = 15;//节点之间的宽
+        var tops = 40;//根节点离顶部的距离
+        var foot = 40;//树离底部距离
+        var spacing = 30;//树分别离两边的间距
+
+        var tree = new RedBlackBinaryTree();
+
+        function AddOneNumber() {
+            var numbertext = document.getElementById("numbertext").value;
+
+            var oneNums = numbertext.match(/[1-9][0-9]{0,2}\,?/);
+            document.getElementById("numbertext").value = numbertext.replace(/[1-9][0-9]{0,2}\,?/, "");
+
+            var num = (oneNums + "").match(/[1-9][0-9]{0,2}/);
+
+            if (!!num) {
+                AddNumber(parseInt(num));
+            }
+        }
+
+        function AddRandom() {
+            AddNumber(Math.floor(Math.random() * (1000)));
+        }
+
+        function AddAllNumber() {
+            while (true) {
+                AddOneNumber();
+                var numbertext = document.getElementById("numbertext").value;
+                if (!/[1-9][0-9]{0,2}/.test(numbertext)) {
+                    break;
+                }
+            }
+        }
+
+        function AddNumber(number) {
+            tree.Insert(number);
+            RenewView(tree);
+        }
+
+        function DeleteNumber() {
+            var deleteNumberText = document.getElementById("deleteNumberText").value;
+            if (!deleteNumberText.match(/^[1-9][0-9]{0,2}$/)) {
+                //alert("请正确输入1-999的整数");
+                return false;
+            }
+            var number = parseInt(deleteNumberText);
+            var isExist = tree.Search(number);
+            if (!isExist)
+            {
+                alert("不存在此节点");
+                return false;
+            }
+            tree.Remove(number);
+            document.getElementById("deleteNumberText").value = '';
+            RenewView(tree);
+        }
+
+        function RenewView(_tree) {
+            var currentView = document.getElementById("currentView");
+            currentView.innerHTML = '';
+            CreateTreeView(_tree.RootNode, currentView);
+        }
+
+
+        function CreateTreeView(rootNode, hostDocument) {
+            var size = SetCanvasWidthHeight(rootNode);
+
+            var canvas = document.createElement("canvas");
+            canvas.style.backgroundColor = "antiquewhite";
+            canvas.style.display = "block";
+            canvas.height = size.height;
+            canvas.width = size.width;
+
+            var context = canvas.getContext("2d");
+
+            hostDocument.appendChild(canvas);
+            SetPoint(rootNode);
+            PreOrder(rootNode, SetPreOrder, context, canvas.width);
+        }
+
+
+        function PreOrder(node, action, context, canvasWidth) {
+            action(node, context, canvasWidth);
+
+            if (node.LeftNode != null) {
+                PreOrder(node.LeftNode, action, context, canvasWidth);
+            }
+
+            if (node.RightNode != null) {
+                PreOrder(node.RightNode, action, context, canvasWidth);
+            }
+        }
+
+
+        function SetCanvasWidthHeight(rootNode) {
+            var level = Level(rootNode);
+            return {
+                height: height * level + tops + foot,
+                width: Math.pow(2, level + 1) * width + spacing * 2
+            };
+        }
+
+        function SetPreOrder(node, context, canvasWidth) {
+            var container = drawArc(
+                context,
+                node.Data,
+                canvasWidth / 2 + width * node.nodePoint,
+                (node.nodeLevel * height + parseInt(tops)),
+                "black");
+
+            if (node.Parent != null) {
+                var line = linkNode(
+                    context,
+                    (canvasWidth / 2 + width * node.Parent.nodePoint),
+                    (node.Parent.nodeLevel * height + parseInt(tops)),
+                    (node.Data, canvasWidth / 2 + width * node.nodePoint),
+                    (node.nodeLevel * height + parseInt(tops)));
+            }
+        }
+
+        //生产节点
+        function drawArc(context, number, x, y, color) {
+            //圆
+            context.beginPath();
+            context.fillStyle = color;
+            context.arc(x, y, 15, (Math.PI / 180) * 0, (Math.PI / 180) * 360, false);
+            context.fill();
+            context.closePath();
+
+            //数字
+            var textX = x;
+            var textY = y + 5;
+            if (number < 10) {
+                textX -= 5;
+            } else if (number > 9 && number < 100) {
+                textX -= 8;
+            } else {
+                textX -= 12;
+            }
+
+            context.fillStyle = "white";
+            context.font = "bold 15px Arial";
+            context.fillText(number + "", textX, textY);
+        }
+
+        //链接节点
+        function linkNode(context, fatherNodeX, fatherNodeY, childrenNodeX, childrenNodeY) {
+            drawLine(context, fatherNodeX, fatherNodeY + 15, childrenNodeX, childrenNodeY - 15);
+        }
+
+        //生产线
+        function drawLine(context, x, y, toX, toY) {
+            context.moveTo(x, y);
+            context.lineTo(x, y);
+            context.lineTo(toX, toY);
+            context.stroke();
+        }
+        var maxLevel;
+        var level;
+        function Level(rootNode) {
+            maxLevel = 0;
+            level = 0;
+            return levels(rootNode);
+        }
+
+        function levels(node) {
+            if (node.LeftNode != null) {
+                level++;
+                levels(node.LeftNode);
+            }
+            maxLevel = Math.max(maxLevel, level);
+
+            if (node.RightNode != null) {
+                level++;
+                levels(node.RightNode);
+            }
+            level--;
+            return maxLevel;
+        }
+
+
+
+        function SetPoint(rootNode) {
+            var thisMaxLevel = Level(rootNode);
+            var childQuanty = Math.pow(2, thisMaxLevel);
+
+            rootNode.nodeLevel = 0;
+            rootNode.nodePoint = 0;
+
+            if (rootNode.LeftNode != null) {
+                setPointsLeft(rootNode.LeftNode, -1 * childQuanty / 2, 0, thisMaxLevel - 1);
+            }
+
+            if (rootNode.RightNode != null) {
+                setPointsRight(rootNode.RightNode, childQuanty / 2, 0, thisMaxLevel - 1);
+            }
+        }
+
+        function setPointsLeft(node, point, levels, thisMaxLevel) {
+            ++levels;
+            node.nodeLevel = levels;
+            node.nodePoint = point;
+
+            if (node.LeftNode != null) {
+                setPointsLeft(node.LeftNode, point - Math.pow(2, thisMaxLevel - levels), levels, thisMaxLevel);
+            }
+
+            if (node.RightNode != null) {
+                setPointsLeft(node.RightNode, point + Math.pow(2, thisMaxLevel - levels), levels, thisMaxLevel);
+            }
+        }
+
+        function setPointsRight(node, point, levels, thisMaxLevel) {
+            ++levels;
+            node.nodeLevel = levels;
+            node.nodePoint = point;
+
+            if (node.LeftNode != null) {
+                setPointsRight(node.LeftNode, point - Math.pow(2, thisMaxLevel - levels), levels, thisMaxLevel);
+            }
+
+            if (node.RightNode != null) {
+                setPointsRight(node.RightNode, point + Math.pow(2, thisMaxLevel - levels), levels, thisMaxLevel);
+            }
+        }
+
+
+        var stepRemark = {
+            "insertCaseA1": {
+                "title": "插入节点情况A1",
+                "remark": [
+                    "插入的为左子树的左孩子"
+                ]
+            },
+            "insertSolutionA1": {
+                "title": "插入节点情况A1的解决方案",
+                "remark": [
+                        "(01) 进行RR旋转"
+                ]
+            },
+            "insertCaseB1": {
+                "title": "插入节点情况2",
+                "remark": [
+                    "插入的为左子树的右孩子"
+                ]
+            },
+            "insertSolutionB1": {
+                "title": "插入节点情况2的解决方案",
+                "remark": [
+                        "(01) 进行LR旋转"
+                ]
+            },
+            "insertCase3": {
+                "title": "插入节点情况3",
+                "remark": [
+                    "插入的为右子树的右孩子"
+                ]
+            },
+            "insertSolution3": {
+                "title": "插入节点情况3的解决方案",
+                "remark": [
+                        "(01)进行LL旋转",
+                    
+                ]
+            },
+            "insertCase4": {
+                "title": "插入节点情况4",
+                "remark": [
+                    "插入的为右子树的左孩子"
+                ]
+            },
+            "insertSolution4": {
+                "title": "插入节点情况4的解决方案",
+                "remark": [
+                        "(01) 进行RL旋转"
+                ]
+            },
+            "deleteCase1": {
+                "title": "删除节点情况1",
+                "remark": [
+                    "进行LL旋转"
+                ]
+            },
+            "deleteSolution1": {
+                "title": "删除节点情况1解决方案",
+                "remark": [
+                    "(01) 进行LL旋转",
+                ]
+            },
+            "deleteCase2": {
+                "title": "删除节点情况2",
+                "remark": [
+                    "进行RR旋转"
+                ]
+            },
+            "deleteSolution2": {
+                "title": "删除节点情况2解决方案",
+                "remark": [
+                    "(01) 进行RR旋转"
+                ]
+            },
+            "deleteCase3": {
+                "title": "删除节点情况3",
+                "remark": [
+                    "进行RL旋转"
+                ]
+            },
+            "deleteSolution3": {
+                "title": "删除节点情况3解决方案",
+                "remark": [
+                    "(01) 进行RL旋转"
+                ]
+            },
+            "deleteCase4": {
+                "title": "删除节点情况4",
+                "remark": [
+                    "进行LR旋转"
+                ]
+            },
+            "deleteSolution4": {
+                "title": "删除节点情况4解决方案",
+                "remark": [
+                    "(01) 进行LR旋转"
+                ]
+            }
+        };
+        function ClearStepView() {
+            var stepView = document.getElementById("stepView");
+            stepView.innerHTML = '';
+        }
+
+        function CreateStepView(_tree, step, currentNumber) {
+            var fieldset = document.createElement("fieldset");
+            var legend = document.createElement("legend");
+            var ul = document.createElement("ul");
+            var canvas = document.createElement("canvas");
+
+            legend.innerHTML = stepRemark[step].title;
+
+            if (!!currentNumber) {
+                var li = document.createElement("li");
+                li.innerHTML = "当前节点：" + currentNumber;
+                ul.appendChild(li);
+            }
+
+
+             for (var i = 0; i < stepRemark[step].remark.length; i++) {
+                 var li = document.createElement("li");
+                 li.innerHTML = stepRemark[step].remark[i];
+                 ul.appendChild(li);
+             }
+ 
+             fieldset.appendChild(legend);
+             fieldset.appendChild(ul);
+             fieldset.appendChild(canvas);
+ 
+             var stepView = document.getElementById("stepView");
+             stepView.appendChild(fieldset);
+ 
+             CreateStepTreeView(_tree, canvas);
+         }
+
+            function CreateStepTreeView(rootNode, canvas) {
+                var size = SetCanvasWidthHeight(rootNode);
+
+                canvas.style.backgroundColor = "antiquewhite";
+                canvas.style.display = "block";
+                canvas.height = size.height;
+                canvas.width = size.width;
+
+                var context = canvas.getContext("2d");
+
+                SetPoint(rootNode);
+                PreOrder(rootNode, SetPreOrder, context, canvas.width);
+            }
+        
+
+    </script>
+</body>
+</html>
+
